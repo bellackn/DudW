@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<html>
+  <head>
+    <title>D3 Map: Joko gegen Klaas - Das Duell um die Welt</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./data/dudwstyle.css">
+    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+  </head>
+  <body>
+
+    <div id="header">
+      <h1 align="center">Joko gegen Klaas - Das Duell um die Welt</h1>
+    </div>
+
+    <div id="svg-div">
+      <svg id="svg" width="1200" height="800"></svg>
+    </div>
+
+    <script>
+
+      var projection = d3.geoConicConformal()
+        .scale(200)
+        .center([5, 60]);
+
+      var graticule = d3.geoGraticule();
+
+      var tooltip = d3.select("body")
+        .append("div")
+        .attr("class", "tooltip");d3.geoConicEqualArea()
+
+      var svg = d3.select("#svg");
+
+      var zoom = d3.zoom()
+        .scaleExtent([1, 2.5])
+        .on("zoom", function() {
+          d3.selectAll(".map")
+            .attr("transform", d3.event.transform);
+      });
+
+      // Create layers to define rendering order
+      // (Probably not the best way, but it works.)
+      var gratlayer = svg.append("g").call(zoom);
+      var clayer = svg.append("g").attr("class", "map").call(zoom);
+      var jokolayer = svg.append("g").attr("class", "map").call(zoom);
+      var klaaslayer = svg.append("g").attr("class", "map").call(zoom);
+
+      var geoPath = d3.geoPath()
+        .projection(projection);
+
+      // This function makes the projection work with the two separated
+      // lon-lat columns from the CSVcolor
+      function longlat (d) {
+        return projection([d.lon, d.lat]);
+      };
+
+      // Render the graticule
+      gratlayer.append("path")
+          .datum(graticule)
+          .attr("class", "graticule map")
+          .attr("d", geoPath);
+
+      // Load and render the world map
+      d3.json("./data/countries.json", function (error, world) {
+        clayer.selectAll("path")
+          .data(world.features)
+          .enter()
+          .append("path")
+          .attr("class", "countries")
+          .attr("d", geoPath)
+          .on("mouseenter", function() {
+            d3.select(this)
+              .transition()
+              .duration(400)
+              .attr("style", "stroke-width: 2px;");
+          })
+          .on("mouseout", function() {
+            d3.select(this)
+              .transition()
+              .duration(400)
+              .attr("style", "stroke-width: 0.5px;")
+          });
+      });
+
+      // Read the Joko CSVcolor
+      d3.csv("./data/joko_geocodiert.csv", function (error, joko) {
+        jokolayer.selectAll("circle")
+          .data(joko)
+          .enter()
+          .append("circle")
+          .attr("cx", function (d) { return longlat(d)[0]; })
+          .attr("cy", function (d) { return longlat(d)[1]; })
+          .attr("r", "6px")
+          .attr("fill", "red")
+          .attr("outline", "black")
+          .on("mouseover", function(d, i) {
+            d3.select(this).attr("r", "10px");
+            tooltip
+              .style("background-color", "red")
+              .html("<b>" + d.country + "</b> - Joko's Stop No. " + (i+1))
+              .transition().style("opacity", 1);
+          })
+	        .on("mousemove", function() { return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px"); })
+          .on("mouseout", function() {
+            d3.select(this).attr("r", "6px");
+            tooltip.transition().style("opacity", 0); });
+      });
+
+      // Read the Klaas CSV
+      d3.csv("./data/klaas_geocodiert.csv", function (error, klaas) {
+        klaaslayer.selectAll("circle")
+          .data(klaas)
+          .enter()
+          .append("circle")
+          .attr("cx", function (d) { return longlat(d)[0]; })
+          .attr("cy", function (d) { return longlat(d)[1]; })
+          .attr("r", "6px")
+          .attr("fill", "blue")
+          .attr("transform", "translate(7, 0)")
+          .on("mouseover", function(d, i) {
+            d3.select(this).attr("r", "10px");
+            tooltip
+              .style("background-color", "blue")
+              .html("<b>" + d.country + "</b> - Klaas' Stop No. " + (i+1))
+              .transition().style("opacity", 1);
+          })
+	        .on("mousemove", function() { return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px"); })
+	        .on("mouseout", function() {
+            d3.select(this).attr("r", "6px");
+            tooltip.transition().style("opacity", 0); });
+      });
+
+      // Create an area with instructions in the lower-righthand corner
+      var box = svg
+        .append("g")
+        .attr("transform", "translate(1000, 700)");
+      box.append("rect")
+        .attr("class", "textbox")
+        .attr("width", 200)
+        .attr("height", 100);
+
+      box.append("text")
+        .attr("class", "boxtext")
+        .attr("x", 5)
+        .attr("y", 25)
+        .text("Hover over the points")
+          .append("tspan")
+          .attr("class", "boxtext")
+          .attr("x", 5)
+          .attr("y", 50)
+          .text("to see who was there")
+            .append("tspan")
+            .attr("class", "boxtext")
+            .attr("x", 5)
+            .attr("y", 75)
+            .text("and when.");
+
+    </script>
+
+  </body>
+</html>

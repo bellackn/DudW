@@ -1,0 +1,49 @@
+#svg {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  transform: translate(0, 10%);
+  background-color: white;
+  border-style: double;
+  border-width: thick;
+}
+
+#header {
+  height: 0px;
+  vertical-align: bottom;
+  font-size: 24px;
+  font-family: Arial, sans-serif;
+  font-variant: small-caps;
+}
+
+.textbox {
+  opacity: .6;
+}
+
+.boxtext {
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+  font-variant: small-caps;
+  fill: white;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 10;
+  opacity: 0;
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+  font-variant: small-caps;
+  color: white;
+}
+
+.countries {
+  fill: #2f2f2f;
+  stroke: #fff;
+}
+
+.graticule {
+  fill: none;
+  stroke: gray;
+  stroke-width: 0.2px;
+}
