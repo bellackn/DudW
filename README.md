@@ -1,7 +1,7 @@
 # DudW
 A D3-based map about famous German TV show "Joko gegen Klaas - Das Duell um die Welt".
 
-***
+Just run `[sudo] docker-compose up -d` and visit `http://localhost` in your browser to see it in action.
 
-**Note:**
-You need to set up a local webserver on your machine and put all files there, otherwise you will not be able to correctly view the HTML because I am referencing to local files in there.
+#TODO
+* Try GitHub pages for this
