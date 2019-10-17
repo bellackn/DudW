@@ -6,6 +6,8 @@
   background-color: white;
   border-style: double;
   border-width: thick;
+  width: 1200px;
+  height: 800px;
 }
 
 #header {
@@ -14,6 +16,10 @@
   font-size: 24px;
   font-family: Arial, sans-serif;
   font-variant: small-caps;
+}
+
+#header h1 {
+  text-align: center;
 }
 
 .textbox {
